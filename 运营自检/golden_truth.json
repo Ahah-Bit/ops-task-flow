@@ -1,0 +1,228 @@
+{
+  "_说明": "评测集：登记每份样例里注入的已知问题。eval.py 用它比对检出结果，算出检出率、漏检项与疑似误报。改样例时必须同步改这里。",
+  "samples": [
+    {
+      "file": "golden/样例一_版本更新公告.md",
+      "type": "announcement",
+      "name": "版本更新公告",
+      "injected": [
+        {
+          "module": "C",
+          "keyword": "参与条件",
+          "desc": "缺必含栏目：参与条件"
+        },
+        {
+          "module": "C",
+          "keyword": "概率",
+          "desc": "缺必含栏目：概率"
+        },
+        {
+          "module": "B",
+          "keyword": "史上",
+          "desc": "禁用表述：史上"
+        },
+        {
+          "module": "B",
+          "keyword": "最强",
+          "desc": "禁用表述：最强"
+        },
+        {
+          "module": "B",
+          "keyword": "永久",
+          "desc": "承诺性表述：永久"
+        },
+        {
+          "module": "B",
+          "keyword": "唯一",
+          "desc": "禁用表述：唯一"
+        },
+        {
+          "module": "B",
+          "keyword": "诚意满满",
+          "desc": "空泛表述：诚意满满"
+        },
+        {
+          "module": "B",
+          "keyword": "非常",
+          "desc": "空泛表述：非常"
+        },
+        {
+          "module": "A",
+          "keyword": "300 星琼",
+          "desc": "数字无出处：300 星琼"
+        },
+        {
+          "module": "A",
+          "keyword": "500 星琼",
+          "desc": "数字无出处：500 星琼"
+        },
+        {
+          "module": "A",
+          "keyword": "10 抽",
+          "desc": "数字无出处：10 抽"
+        },
+        {
+          "module": "A",
+          "keyword": "5 小时",
+          "desc": "数字无出处：5 小时"
+        },
+        {
+          "module": "A",
+          "keyword": "50 万",
+          "desc": "数字无出处：50 万"
+        },
+        {
+          "module": "D",
+          "keyword": "停服补偿",
+          "desc": "同一指标两个数值：停服补偿 300 与 500"
+        },
+        {
+          "module": "E",
+          "keyword": "奖励给得很实在",
+          "desc": "引用玩家发言未标出处"
+        }
+      ]
+    },
+    {
+      "file": "golden/样例二_玩家反馈日报.md",
+      "type": "feedback_table",
+      "name": "玩家反馈日报",
+      "injected": [
+        {
+          "module": "C",
+          "keyword": "影响范围",
+          "desc": "缺必含栏目：影响范围"
+        },
+        {
+          "module": "A",
+          "keyword": "1200 条",
+          "desc": "数字无出处：1200 条"
+        },
+        {
+          "module": "A",
+          "keyword": "320 条",
+          "desc": "数字无出处：320 条"
+        },
+        {
+          "module": "A",
+          "keyword": "300 条",
+          "desc": "数字无出处：300 条"
+        },
+        {
+          "module": "A",
+          "keyword": "8 条",
+          "desc": "数字无出处：8 条"
+        },
+        {
+          "module": "D",
+          "keyword": "客户端类",
+          "desc": "同一分类两个数值：客户端类 320 与 300"
+        },
+        {
+          "module": "E",
+          "keyword": "根本玩不了",
+          "desc": "引用玩家原话未标出处"
+        },
+        {
+          "module": "F",
+          "keyword": "两个数对不上",
+          "desc": "数量与枚举不一致：写 2 条列 3 个"
+        }
+      ]
+    },
+    {
+      "file": "golden/样例三_活动复盘报告.md",
+      "type": "report",
+      "name": "活动复盘报告",
+      "injected": [
+        {
+          "module": "C",
+          "keyword": "口径",
+          "desc": "缺必含栏目：口径"
+        },
+        {
+          "module": "C",
+          "keyword": "异常",
+          "desc": "缺必含栏目：异常"
+        },
+        {
+          "module": "B",
+          "keyword": "毫无疑问",
+          "desc": "禁用表述：毫无疑问"
+        },
+        {
+          "module": "B",
+          "keyword": "效果显著",
+          "desc": "空泛表述：效果显著"
+        },
+        {
+          "module": "B",
+          "keyword": "普遍认为",
+          "desc": "空泛表述：普遍认为"
+        },
+        {
+          "module": "A",
+          "keyword": "32%",
+          "desc": "数字无出处：32%"
+        },
+        {
+          "module": "A",
+          "keyword": "800 万",
+          "desc": "数字无出处：800 万"
+        },
+        {
+          "module": "A",
+          "keyword": "1.2 万人",
+          "desc": "数字无出处：1.2 万人"
+        },
+        {
+          "module": "A",
+          "keyword": "45%",
+          "desc": "数字无出处：45%"
+        },
+        {
+          "module": "D",
+          "keyword": "参与率",
+          "desc": "同一指标两个数值：参与率 32% 与 45%"
+        },
+        {
+          "module": "E",
+          "keyword": "比上一期舒服很多",
+          "desc": "引用玩家评价未标出处"
+        }
+      ]
+    },
+    {
+      "file": "golden/样例四_版本上线自检.md",
+      "type": "launch_check",
+      "name": "版本上线自检",
+      "injected": [
+        {
+          "module": "C",
+          "keyword": "埋点",
+          "desc": "缺必含栏目：埋点"
+        },
+        {
+          "module": "C",
+          "keyword": "数据合规",
+          "desc": "缺必含栏目：数据合规"
+        },
+        {
+          "module": "C",
+          "keyword": "回滚",
+          "desc": "缺必含栏目：回滚"
+        },
+        {
+          "module": "C",
+          "keyword": "归档",
+          "desc": "缺必含栏目：归档"
+        },
+        {
+          "module": "A",
+          "keyword": "42 项",
+          "desc": "数字无出处：42 项"
+        }
+      ]
+    }
+  ]
+}
