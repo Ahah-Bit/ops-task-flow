@@ -1,0 +1,50 @@
+游戏运营场景人机协作分工台账
+Copyright 2026 李霖峰
+
+本文件随 Apache-2.0 代码分发，按许可证要求保留。
+
+一、许可归属
+
+代码：Apache-2.0，见 LICENSE 第一节。
+文档、设计稿与截图：CC BY-NC-SA 4.0，见 LICENSE 第二节。
+
+二、素材来源
+
+1. 41 条玩家反馈：采集自公开渠道，逐条标注渠道与日期，繁体原文不转写。
+   清单见 案例-玩家反馈日报/01_原始反馈与来源.md，抽验记录见
+   案例-玩家反馈日报/03_过程说明.md 第六节。
+2. 六轮校准材料：同一批公开渠道素材，见 docs/六轮校准总结.md 与
+   docs/校准过程原始记录/。
+3. 行业检查清单：网易易盾《游戏上线前安全自检清单》、国内手游上线全流程解析、
+   Design The Game《Final Launch Checklist》、游戏行业全流程合规指南。
+   逐条出处见 知识条目清单.md 的行业检查清单一节。
+4. 三张截图：由本工具页面与案例过程实拍，生成脚本为
+   案例-玩家反馈日报/截图.py，见 screenshots/。
+5. 行业框架：MDA 2004、GameFlow 2005、心流理论 1990、Quantic Foundry 2016、
+   AARRR 2007、HEART 2010，逐条登记见 docs/调研与出处.md。
+
+三、参考仓库
+
+以下公开仓库只用于阅读评测设计，代码与文本均未并入本仓库：
+
+- nityaattili/AI-feedback-categoriser，evaluate.py，分模块 P/R/F1
+- ozlar34/llm-judge-evals，drift-log.jsonl，版本键与逐用例状态
+- mrjunos/llm-eval-harness，data/judge_calibration.yaml，人工标注校准集
+- Liyao9797/game-customer-support-agent，docs/AGENT_EVALUATION_FRAMEWORK.md，
+  文档更新时间 2026-05-28，1 到 5 分标尺与通过线
+- Julez14/feedback-analyzer，docs/Design_Decisions.md，确定性统计与主题分两层
+- ForceInjection/ai-native-devops，ai-native-devops.md 第 4.5 节，RACI 治理写法
+- mertcaralan/ai-review-analysis-pipeline，优先级打分与失败兜底
+
+下载日期 2026-11-09，来源 URL 登记在本地工程 _work/参考项目/_sources.json。
+本仓库按窗口提示词要求，不收录参考仓库文件本身。
+
+四、未收录内容
+
+本仓库不含访问凭据、手机号与邮箱、公司内部数据、后台配置与埋点明细、
+完整对话记录、浏览器缓存。公开前逐项扫描结果见 docs/仓库检查清单.md。
+
+五、归属说明
+
+25 章迭代记录与六轮校准过程一并公开，用来说明设计决策是怎么被证据改过的。
+首次提交时间与设计过程合在一起，是这份工作的归属证据。
