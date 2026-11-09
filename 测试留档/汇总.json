@@ -1,0 +1,60 @@
+{
+  "node": "C:\\Users\\16073\\.workbuddy\\binaries\\node\\versions\\22.22.2-6\\node.exe",
+  "python": "C:\\Users\\16073\\.workbuddy\\binaries\\python\\versions\\3.13.12\\python.exe",
+  "tests": [
+    {
+      "name": "smoke_test.js",
+      "exit": 0,
+      "seconds": 7.8,
+      "stdout_bytes": 788,
+      "log": "测试留档/smoke_test.js.log",
+      "attempts": 1,
+      "first_exit": null
+    },
+    {
+      "name": "test_edge.js",
+      "exit": 0,
+      "seconds": 1.8,
+      "stdout_bytes": 326,
+      "log": "测试留档/test_edge.js.log",
+      "attempts": 1,
+      "first_exit": null
+    },
+    {
+      "name": "test_layout.py",
+      "exit": 0,
+      "seconds": 4.3,
+      "stdout_bytes": 480,
+      "log": "测试留档/test_layout.py.log",
+      "attempts": 1,
+      "first_exit": null
+    },
+    {
+      "name": "test_live.js",
+      "exit": 0,
+      "seconds": 37.6,
+      "stdout_bytes": 430,
+      "log": "测试留档/test_live.js.log",
+      "attempts": 1,
+      "first_exit": null
+    },
+    {
+      "name": "verify_flows.py",
+      "exit": 0,
+      "seconds": 0.3,
+      "stdout_bytes": 9561,
+      "log": "测试留档/verify_flows.py.log",
+      "attempts": 1,
+      "first_exit": null
+    },
+    {
+      "name": "eval.py",
+      "exit": 0,
+      "seconds": 0.3,
+      "stdout_bytes": 462,
+      "log": "测试留档/eval.py.log",
+      "attempts": 1,
+      "first_exit": null
+    }
+  ]
+}
