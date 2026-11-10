@@ -3,178 +3,359 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ops-task-flow · 游戏运营任务的人机协作流程台账</title>
-<meta name="description" content="把 12 项游戏运营岗位任务里的 11 项拆成 74 步，每一步写清 AI 做什么、人做什么、在哪交接、凭什么这么分。">
+<title>OpsFlow · 运营任务 AI 分工与评测工具</title>
+<meta name="description" content="把 12 项岗位任务拆成 74 步，每一步写清 AI 做什么、人做什么、在哪交接、凭什么这么分。四件事刻意不自动：定口径、风险定级、写结论、签字放行。">
 <style>
-  /* 设计令牌：共用层 + theme-light，值与工具本体 :root 逐条一致 */
   :root{
-    --bg:#f5f4f1; --surface:#fffefc; --surface-2:#faf9f6; --surface-3:#f1efe9;
-    --line:rgba(28,26,22,.10); --line-2:rgba(28,26,22,.06); --line-strong:rgba(28,26,22,.20);
+    --bg:#f5f4f1; --surface:#fffefc; --surface-2:#faf9f6;
+    --line:rgba(28,26,22,.10);
     --ink:#1c1a17; --ink-2:#4a463f; --muted:#7d766b;
-    --accent:#b45309; --accent-dark:#8a3d05; --accent-soft:#fdf2e3;
-    --mach:#b45309; --mach-soft:#fdf4e8; --mach-line:#eedcbe;
-    --human:#0f766e; --human-soft:#edf8f6; --human-line:#c6e8e1;
-    --hand:#4338ca; --hand-soft:#eef0fe; --hand-line:#d7dafb;
-    --alert:#b91c1c; --alert-soft:#fdf3f3; --alert-line:#f2d6d6;
-    --r-sm:6px; --r-md:10px; --r-lg:14px;
-    --sh-1:0 1px 2px rgba(28,26,22,.05);
-    --sh-2:0 2px 8px rgba(28,26,22,.07), 0 1px 2px rgba(28,26,22,.04);
-    --sh-3:0 10px 28px rgba(28,26,22,.10);
-    --mono:"Cascadia Mono",Consolas,"SFMono-Regular",ui-monospace,monospace;
-    --sans:"Source Han Sans SC","Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
-    --ease:cubic-bezier(0.16,1,0.3,1);
-    --dur-fast:160ms; --dur-base:320ms; --dur-slow:640ms;
-    --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:24px; --sp-6:40px;
-    --fs-1:12.5px; --fs-2:14px; --fs-3:16px; --fs-4:17px; --fs-5:24px; --fs-6:32px;
-    --hairline:1px;
+    --accent:#b45309;
+    --mach-soft:#fdf4e8; --mach-line:#eedcbe;
+    --human-soft:#edf8f6; --human-line:#c6e8e1;
+    --hand:#4338ca;
+    --mono:ui-monospace,Consolas,monospace;
+    --sans:system-ui,"Microsoft YaHei",sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{-webkit-text-size-adjust:100%}
-  body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:var(--fs-3);line-height:1.7}
-  .wrap{max-width:1060px;margin:0 auto;padding:0 var(--sp-5)}
-  a:focus-visible,.btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.7}
+  .wrap{max-width:1280px;margin:0 auto;padding:0 32px}
+  a{color:inherit}
+  a:focus-visible,.btn:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 
-  header.tb{display:flex;align-items:baseline;justify-content:space-between;gap:var(--sp-3);
-    padding:var(--sp-4) 0 var(--sp-3);border-bottom:var(--hairline) solid var(--line-strong)}
-  .repo{font-family:var(--mono);font-size:var(--fs-2);color:var(--ink-2)}
-  .sheet{font-family:var(--mono);font-size:var(--fs-1);color:var(--ink-2)}
+  /* ---------- 首屏 ---------- */
+  .hero{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:32px;
+    align-items:center;min-height:78vh;padding:52px 32px 36px}
+  .hero-copy{grid-column:span 5;min-width:0}
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--muted);
+    margin-bottom:22px}
+  h1{font-size:clamp(40px,4vw,54px);line-height:1.2;font-weight:700;letter-spacing:-.02em}
+  h1 .hl{color:var(--accent)}
+  .lead{margin-top:22px;color:var(--ink-2);font-size:16px;max-width:30em}
+  .lead p+p{margin-top:10px}
+  .cta{display:flex;align-items:center;gap:8px;margin-top:30px;
+    background:var(--accent);color:#fff;font-size:16px;font-weight:600;text-decoration:none;
+    height:48px;padding:0 28px;border-radius:6px;width:max-content;
+    transition:background-color .16s ease}
+  .cta:hover{background:#97450a}
+  .cta .ar{font-family:var(--mono);font-weight:400}
+  .doclinks{margin-top:16px;font-size:14px;color:var(--ink-2);display:flex;flex-wrap:wrap;gap:0 10px}
+  .doclinks a{text-decoration:underline;text-underline-offset:3px}
+  .doclinks a:hover{color:var(--ink)}
+  .doclinks .sep{color:var(--muted)}
+  .hero-stats{margin-top:12px;font-family:var(--mono);font-size:12px;color:var(--muted);
+    display:flex;flex-wrap:wrap;gap:0 8px;letter-spacing:.02em}
 
-  main{padding:var(--sp-6) 0 var(--sp-5)}
-  .cols{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:var(--sp-6);align-items:start}
-  h1{font-size:var(--fs-6);line-height:1.3;font-weight:700;letter-spacing:-.01em;margin-bottom:var(--sp-3)}
-  .lead{color:var(--ink-2);margin-bottom:var(--sp-4);max-width:34em}
-  .trust{padding:var(--sp-2) 0;margin-bottom:var(--sp-5);
-    border-top:var(--hairline) solid var(--line);border-bottom:var(--hairline) solid var(--line)}
-  .trust b{font-family:var(--mono);font-weight:600;font-variant-numeric:tabular-nums}
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--sp-2);
-    background:var(--accent);color:var(--surface);font-size:var(--fs-4);font-weight:600;
-    text-decoration:none;padding:var(--sp-3) var(--sp-5);border-radius:var(--r-sm);
-    transition:background-color var(--dur-fast) var(--ease)}
-  .btn:hover{background:var(--accent-dark)}
-  .btn .ar{font-family:var(--mono);font-weight:400}
-  .sub{margin-top:var(--sp-4);display:flex;flex-wrap:wrap;gap:var(--sp-2) var(--sp-3);font-size:var(--fs-2)}
-  .sub a{color:var(--ink-2);text-decoration:underline;text-underline-offset:3px}
-  .sub a:hover{color:var(--ink)}
-  .sub .sep{color:var(--ink-2)}
+  .hero-vis{grid-column:span 7;min-width:0}
+  .swim{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:18px 20px 34px}
+  .swim-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 12px;
+    font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:14px}
 
-  figure.swim{background:var(--surface);border:var(--hairline) solid var(--line);
-    border-radius:var(--r-md);padding:var(--sp-3)}
-  .fh{display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--sp-1) var(--sp-2);
-    font-family:var(--mono);font-size:var(--fs-1);color:var(--ink-2);padding:0 var(--sp-1) var(--sp-2)}
-  .lanes{display:grid;grid-template-columns:minmax(0,1fr) 44px minmax(0,1fr);
-    border:var(--hairline) solid var(--line)}
-  .lh{font-family:var(--mono);font-size:var(--fs-1);font-weight:600;color:var(--ink-2);padding:var(--sp-1) var(--sp-2)}
-  .lh.m{grid-column:1;background:var(--mach-soft);border-bottom:var(--hairline) solid var(--mach-line)}
-  .lh.g{grid-column:2;background:var(--surface)}
-  .lh.h{grid-column:3;background:var(--human-soft);border-bottom:var(--hairline) solid var(--human-line)}
-  .cm{grid-column:1;background:var(--mach-soft);padding:5px 6px}
-  .cg{grid-column:2;background:var(--surface);position:relative}
-  .ch{grid-column:3;background:var(--human-soft);padding:5px 6px}
-  .step{background:var(--surface);border:var(--hairline) solid var(--mach-line);
-    border-radius:var(--r-sm);padding:var(--sp-1) var(--sp-2)}
-  .ch .step{border-color:var(--human-line)}
-  .step .no{font-family:var(--mono);font-size:var(--fs-1);color:var(--ink-2);margin-right:var(--sp-1)}
-  .step .nm{font-size:var(--fs-2);font-weight:600;color:var(--ink)}
-  .step .nt{display:block;font-size:var(--fs-1);color:var(--ink-2);margin-top:1px}
-  .hx{position:absolute;inset:0}
-  .hx::before{content:"";position:absolute;top:-5px;height:1px;width:calc(50% + 6px);background:var(--hand)}
-  .hx.from-h::before{right:-6px}
-  .hx.from-m::before{left:-6px}
-  .hx b{position:absolute;left:50%;top:-5px;bottom:50%;width:1px;background:var(--hand)}
-  .hx u{position:absolute;top:50%;height:1px;width:calc(50% + 6px);background:var(--hand)}
-  .hx.to-m u{left:-6px}
-  .hx.to-h u{right:-6px}
-  .hx u::after{content:"";position:absolute;top:-3px;width:0;height:0;
-    border-top:3px solid transparent;border-bottom:3px solid transparent}
-  .hx.to-m u::after{left:-4px;border-right:5px solid var(--hand)}
-  .hx.to-h u::after{right:-4px;border-left:5px solid var(--hand)}
-  .fc{font-size:var(--fs-1);color:var(--ink-2);padding:var(--sp-2) var(--sp-1) 0}
+  /* 两条泳道各自紧凑堆叠，不按行对齐 */
+  .lanes{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    column-gap:44px;align-items:stretch}
+  .lane{min-width:0;border:1px solid;border-radius:8px;padding-bottom:10px;
+    display:flex;flex-direction:column}
+  .lane-m{background:var(--mach-soft);border-color:var(--mach-line)}
+  .lane-h{background:var(--human-soft);border-color:var(--human-line)}
+  .lane-head{height:26px;display:flex;align-items:center;padding:0 10px;
+    font-family:var(--mono);font-size:12px;font-weight:600;color:var(--ink-2)}
+  .step{background:var(--surface);border:1px solid var(--mach-line);border-radius:6px;
+    flex:1 1 auto;min-height:70px;padding:8px 10px;display:flex;flex-direction:column;
+    justify-content:center;min-width:0}
+  .lane-h .step{padding:20px 10px}
+  .lane .step{margin:0 10px 10px}
+  .lane .step:last-child{margin-bottom:0}
+  .lane-h .step{border-color:var(--human-line)}
+  .step .no{font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.5}
+  .step .nm{font-size:13px;font-weight:600;line-height:1.4}
+  .step .nt{font-size:11px;color:var(--muted);line-height:1.5;margin-top:1px}
+  .step .detail::before{content:" · "}
+  .step .why{font-size:11px;color:var(--muted);line-height:1.5;margin-top:4px}
 
-  footer{border-top:var(--hairline) solid var(--line-strong);padding:var(--sp-3) 0 var(--sp-5);
-    font-size:var(--fs-2);color:var(--ink-2);display:flex;flex-wrap:wrap;gap:var(--sp-1) var(--sp-2)}
-  footer a{color:var(--ink-2);text-decoration:underline;text-underline-offset:3px}
+  /* 跨道交接折线：位置按卡高 70 + 间距 10 计算 */
+  .hx{position:absolute;background:var(--hand)}
+  .hx-a{top:74px;left:calc(50% - 32px);width:64px;height:1px}
+  .hx-b1{top:147px;left:calc(50% - 32px);width:40px;height:1px}
+  .hx-b2{top:147px;left:calc(50% + 8px);width:1px;height:62px}
+  .hx-b3{top:209px;left:calc(50% + 8px);width:24px;height:1px}
+  .hx-c{top:230px;left:calc(50% - 32px);width:64px;height:1px}
+  .hx-a::after,.hx-b3::after,.hx-c::after{content:"";position:absolute;top:-3px;
+    width:0;height:0;border-top:4px solid transparent;border-bottom:4px solid transparent}
+  .hx-a::after,.hx-c::after{left:-1px;border-right:6px solid var(--hand)}
+  .hx-b3::after{right:-1px;border-left:6px solid var(--hand)}
+
+  /* 06 两者：横跨两条道的通栏条 */
+  .step-both{margin-top:12px;display:flex;align-items:center;gap:10px;
+    background:var(--surface);border:1px solid var(--line);border-radius:6px;
+    padding:9px 14px;height:44px}
+  .step-both .no{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .step-both .nm{font-size:13px;font-weight:600}
+  .step-both .tag{font-family:var(--mono);font-size:10px;line-height:1.6;padding:1px 7px;
+    border-radius:99px;border:1px solid}
+  .step-both .tag.m{color:#8a3d05;background:var(--mach-soft);border-color:var(--mach-line)}
+  .step-both .tag.h{color:#0b5d56;background:var(--human-soft);border-color:var(--human-line)}
+  .step-both .nt{font-size:11px;color:var(--muted);margin-left:auto}
+  .swim-foot{font-size:12px;color:var(--muted);padding:12px 2px 0;line-height:1.6}
+
+  /* ---------- 第二屏 ---------- */
+  .band{background:#efede6}
+  .band>.wrap{padding:64px 32px;border-top:1px solid var(--line)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--muted)}
+  .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;margin-top:20px}
+  .col{display:grid;grid-template-rows:auto auto 1fr auto;
+    border-top:1px solid var(--line);padding-top:20px}
+  .col .idx{font-family:var(--mono);font-size:12px;color:var(--accent)}
+  .col h3{font-size:20px;font-weight:700;line-height:1.4;margin-top:6px}
+  .col p{font-size:15px;color:var(--ink-2);max-width:26em;margin-top:8px}
+  .col .more{font-size:14px;color:var(--muted);margin-top:6px}
+  .col .fig{font-family:var(--mono);font-size:32px;font-weight:600;color:var(--accent);
+    margin-top:18px;padding-top:16px;border-top:1px solid var(--line);align-self:end;
+    width:100%;
+    font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+
+  .rule-note{margin-top:28px;background:var(--surface);border:1px solid var(--line);
+    border-radius:8px;padding:20px;display:grid;grid-template-columns:5fr 7fr;
+    gap:12px 32px;align-items:center}
+  .rule-note p{font-size:15px;color:var(--ink-2)}
+  .rule-note .sub{font-size:13px;color:var(--muted);line-height:1.7;margin-top:8px}
+  .rule-note code{display:block;font-family:var(--mono);font-size:12px;line-height:1.7;
+    color:var(--ink-2);background:var(--surface-2);border:1px solid var(--line);
+    border-radius:6px;padding:12px 14px;white-space:pre-wrap;overflow-wrap:anywhere}
+
+  /* ---------- 第三屏 ---------- */
+  .case{padding:64px 0 56px}
+  .case-lead{font-size:16px;color:var(--ink-2);max-width:34em;margin-top:20px}
+  .case-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:48px;
+    margin-top:32px;align-items:start}
+  .case-txt{grid-column:span 5;min-width:0;display:flex;flex-direction:column;gap:36px}
+  .case-item{border-top:1px solid var(--line);padding:16px 0}
+  .case-item:first-child{border-top:0;padding-top:0}
+  .case-item .k{font-family:var(--mono);font-size:12px;color:var(--accent)}
+  .case-item h4{font-size:16px;font-weight:600;margin-top:4px}
+  .case-item p{font-size:15px;color:var(--ink-2);margin-top:4px}
+  .case-item p.note{font-size:13px;color:var(--muted);margin-top:2px}
+
+  .shot{grid-column:span 7;min-width:0}
+  .shot img{display:block;width:100%;height:auto;border:1px solid var(--line);
+    border-radius:10px;background:var(--surface-2)}
+  .shot figcaption{font-family:var(--mono);font-size:11px;color:var(--muted);
+    margin-top:10px;line-height:1.6}
+
+  .stats{display:flex;flex-wrap:wrap;gap:16px 40px;margin-top:48px;
+    border-top:1px solid var(--line);padding-top:24px}
+  .stat .v{font-family:var(--mono);font-size:20px;font-weight:700;
+    font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+  .stat .l{font-size:12px;color:var(--muted);margin-top:2px}
+
+  footer{border-top:1px solid var(--line);padding:22px 0 40px;font-size:14px;
+    color:var(--ink-2);display:flex;flex-wrap:wrap;gap:0 8px}
+  .case>footer{margin:36px auto 0}
+  footer .sep{color:var(--muted)}
+  footer a{text-decoration:underline;text-underline-offset:3px}
   footer a:hover{color:var(--ink)}
 
-  @media (max-width:860px){
-    .cols{grid-template-columns:1fr;gap:var(--sp-5)}
+  /* ---------- 响应式 ---------- */
+  @media (max-width:900px){
+    .hero{grid-template-columns:1fr;row-gap:36px;min-height:0;padding:44px 32px 56px}
+    .hero-copy,.hero-vis{grid-column:1}
+    .swim{min-height:0}
+    .three{grid-template-columns:1fr;gap:28px}
+    .case-grid{grid-template-columns:1fr;gap:36px}
+    .case-txt,.shot{grid-column:1}
+    .case-txt{gap:28px}
+    .band>.wrap{padding:56px 32px}
+    .case{padding:56px 0 48px}
   }
   @media (max-width:560px){
-    .wrap{padding:0 var(--sp-4)}
-    main{padding:var(--sp-5) 0}
-    .btn{width:100%}
-    .lanes{grid-template-columns:minmax(0,1fr) 30px minmax(0,1fr)}
-  }
-  @media (prefers-reduced-motion:reduce){
-    *{transition:none !important}
+    .wrap{padding:0 20px}
+    .hero{padding:36px 20px 44px}
+    h1{font-size:34px}
+    .cta{width:100%;justify-content:center}
+    .swim{padding:14px}
+    .lanes{column-gap:34px}
+    .lane .step{margin:0 7px 8px}
+    .lane .step:last-child{margin-bottom:0}
+    .step{min-height:84px;padding:6px 7px}
+    .lane-h .step{padding:14px 7px}
+    .step .nm{font-size:12px}
+    .step .nt{font-size:10.5px}
+    .step .detail{display:block}
+    .step .detail::before{content:""}
+    .step .why{font-size:10.5px;margin-top:3px}
+    .hx-a{top:80px;left:calc(50% - 24px);width:48px}
+    .hx-b1{top:161px;left:calc(50% - 24px);width:32px}
+    .hx-b2{top:161px;left:calc(50% + 8px);height:69px}
+    .hx-b3{top:230px;left:calc(50% + 8px);width:16px}
+    .hx-c{top:253px;left:calc(50% - 24px);width:48px}
+    .band>.wrap{padding:48px 20px}
+    .rule-note{grid-template-columns:1fr;gap:12px}
+    .step-both{flex-wrap:wrap;row-gap:2px;padding:8px 10px;height:auto;min-height:44px}
+    .step-both .nm{white-space:nowrap}
+    .step-both .tag{display:none}
+    .step-both .nt{margin-left:0;width:100%;font-size:10.5px;line-height:1.4}
+    .lane-head{padding:0 8px}
+    .stats{gap:14px 28px}
   }
 </style>
 </head>
 <body>
 
-<div class="wrap">
-  <header class="tb">
-    <span class="repo">ops-task-flow</span>
-    <span class="sheet">流程台账 / 工具入口</span>
-  </header>
+<!-- ================= 首屏 ================= -->
+<section class="hero wrap">
+  <div class="hero-copy">
+    <p class="kicker">OpsFlow — 运营任务 AI 分工与评测工具</p>
+    <h1>运营任务里，<br>哪一段该<span class="hl">交给机器</span></h1>
+    <div class="lead">
+      <p>把 12 项岗位任务拆成 74 步，每一步写清 AI 做什么、人做什么、在哪交接、凭什么这么分。</p>
+      <p>四件事刻意不自动：定口径、风险定级、写结论、签字放行。</p>
+    </div>
+    <a class="cta" href="./运营场景人机协作流程工具.html">进入工具<span class="ar" aria-hidden="true">→</span></a>
+    <nav class="doclinks" aria-label="项目文档">
+      <a href="https://github.com/Ahah-Bit/ops-task-flow#readme">项目说明</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="https://github.com/Ahah-Bit/ops-task-flow/blob/master/评测报告.md">评测报告</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="https://github.com/Ahah-Bit/ops-task-flow/blob/master/docs/迭代记录-25章.md">迭代记录</a>
+    </nav>
+    <p class="hero-stats">39/39 检出<span class="sep" aria-hidden="true">·</span>0 误报<span class="sep" aria-hidden="true">·</span>91.7% 一致率</p>
+  </div>
 
-  <main>
-    <div class="cols">
-      <section class="intro">
-        <h1>游戏运营任务的人机协作流程台账</h1>
-        <p class="lead">把 12 项岗位任务里的 11 项拆成 74 步，每一步写清六件事：AI 做什么、人做什么、在哪交接、产出什么、出错怎么办、凭什么这么分。</p>
-        <p class="trust"><b>11</b> 项岗位任务、<b>74</b> 步、<b>74</b> 处交接，每一步都写了判定依据。</p>
-        <a class="btn" href="./运营场景人机协作流程工具.html">进入工具<span class="ar" aria-hidden="true">→</span></a>
-        <nav class="sub" aria-label="项目文档">
-          <a href="https://github.com/Ahah-Bit/ops-task-flow#readme">项目说明</a>
-          <span class="sep" aria-hidden="true">·</span>
-          <a href="https://github.com/Ahah-Bit/ops-task-flow/blob/master/评测报告.md">评测报告</a>
-          <span class="sep" aria-hidden="true">·</span>
-          <a href="https://github.com/Ahah-Bit/ops-task-flow/blob/master/docs/迭代记录-25章.md">迭代记录</a>
-        </nav>
-      </section>
-
-      <figure class="swim">
-        <p class="fh"><span>泳道示意 · 玩家反馈日报</span><span>箭头＝交接点</span></p>
-        <div class="lanes" role="img" aria-label="泳道示意图：机器泳道与人泳道各排步骤，跨泳道的箭头是交接点。第 1 步人定口径，交给机器第 2 步采集与规范化、第 3 步分类打标；第 3 步交回人第 4 步紧急项升级；第 4 步交给机器第 5 步成文、第 6 步交付前自检。">
-          <span class="lh m">机器</span><span class="lh g"></span><span class="lh h">人</span>
-
-          <div class="cm"></div>
-          <div class="cg"></div>
-          <div class="ch"><div class="step"><span class="no">01</span><span class="nm">定口径</span><span class="nt">人拍板</span></div></div>
-
-          <div class="cm"><div class="step"><span class="no">02</span><span class="nm">采集与规范化</span><span class="nt">机器全包</span></div></div>
-          <div class="cg"><i class="hx from-h to-m" aria-hidden="true"><b></b><u></u></i></div>
-          <div class="ch"></div>
-
-          <div class="cm"><div class="step"><span class="no">03</span><span class="nm">分类打标</span><span class="nt">人只看例外</span></div></div>
-          <div class="cg"></div>
-          <div class="ch"></div>
-
-          <div class="cm"></div>
-          <div class="cg"><i class="hx from-m to-h" aria-hidden="true"><b></b><u></u></i></div>
-          <div class="ch"><div class="step"><span class="no">04</span><span class="nm">紧急项升级</span><span class="nt">人拍板</span></div></div>
-
-          <div class="cm"><div class="step"><span class="no">05</span><span class="nm">成文</span><span class="nt">人过一遍</span></div></div>
-          <div class="cg"><i class="hx from-h to-m" aria-hidden="true"><b></b><u></u></i></div>
-          <div class="ch"></div>
-
-          <div class="cm"><div class="step"><span class="no">06</span><span class="nm">交付前自检</span><span class="nt">人只看例外</span></div></div>
-          <div class="cg"></div>
-          <div class="ch"></div>
+  <div class="hero-vis">
+    <figure class="swim">
+      <p class="swim-head"><span>泳道示意 · 玩家反馈日报</span><span>箭头 ＝ 交接点</span></p>
+      <div class="lanes" role="img" aria-label="泳道示意图：人先定口径，交给机器采集与规范化、分类打标；分类结果交回人做紧急项升级，再交给机器成文；最后一步交付前自检由机器查、人签字放行。">
+        <div class="lane lane-m">
+          <p class="lane-head">机器</p>
+          <div class="step"><span class="no">02</span><span class="nm">采集与规范化</span><span class="nt"><span class="role">机器先跑</span><span class="detail">去重与清洗</span></span></div>
+          <div class="step"><span class="no">03</span><span class="nm">分类打标</span><span class="nt"><span class="role">机器先跑</span><span class="detail">五类分桶</span></span></div>
+          <div class="step"><span class="no">05</span><span class="nm">成文</span><span class="nt"><span class="role">机器先跑</span><span class="detail">四节初稿</span></span></div>
         </div>
-        <figcaption class="fc">工具里 11 项任务都这样画。点任意一步，看六件事的细节与判定依据。</figcaption>
+
+        <div class="lane lane-h">
+          <p class="lane-head">人</p>
+          <div class="step"><span class="no">01</span><span class="nm">定口径</span><span class="nt"><span class="role">人拍板</span><span class="detail">口径先定死</span></span><span class="why">口径由运营定，机器不替你猜</span></div>
+          <div class="step"><span class="no">04</span><span class="nm">紧急项升级</span><span class="nt"><span class="role">人必须看</span><span class="detail">高优先拦</span></span><span class="why">高风险由人拍板，机器只标出来</span></div>
+        </div>
+
+        <i class="hx hx-a" aria-hidden="true"></i>
+        <i class="hx hx-b1" aria-hidden="true"></i>
+        <i class="hx hx-b2" aria-hidden="true"></i>
+        <i class="hx hx-b3" aria-hidden="true"></i>
+        <i class="hx hx-c" aria-hidden="true"></i>
+      </div>
+
+      <div class="step-both">
+        <span class="no">06</span>
+        <span class="nm">交付前自检</span>
+        <span class="tag m">机器</span><span class="tag h">人</span>
+        <span class="nt">机器查 39 项，人签字放行</span>
+      </div>
+      <p class="swim-foot">六步里只有两步必须人拍板，其余交给机器，人只看例外。</p>
+    </figure>
+  </div>
+</section>
+
+<!-- ================= 第二屏 ================= -->
+<section class="band">
+  <div class="wrap">
+    <p class="eyebrow">它解决什么</p>
+
+    <div class="three">
+      <div class="col">
+        <span class="idx">01</span>
+        <h3>任务拆解</h3>
+        <div class="body">
+          <p>12 项岗位任务拆成 74 步，每步六个字段：AI 做什么、人做什么、在哪交接、产出什么、出错怎么办、凭什么这么分</p>
+          <p class="more">第 12 项福利规划与付费点设计登记为不画，理由写在流程数据里</p>
+        </div>
+        <span class="fig">74 步</span>
+      </div>
+      <div class="col">
+        <span class="idx">02</span>
+        <h3>交付物自检</h3>
+        <div class="body">
+          <p>A 到 F 六模块检查规则，外置成 JSON，改规则不用改代码；注入 39 项全部检出</p>
+          <p class="more">规则字段：检查项、判据、所属模块、命中示例</p>
+        </div>
+        <span class="fig">39 / 39</span>
+      </div>
+      <div class="col">
+        <span class="idx">03</span>
+        <h3>评测链路</h3>
+        <div class="body">
+          <p>人工标注校准一致率、漏放行、分模块 P/R/F1、版本键 drift 日志</p>
+          <p class="more">六套测试 + 两份负向测试，负向测试用来证明检查真的会响</p>
+        </div>
+        <span class="fig">91.7%</span>
+      </div>
+    </div>
+
+    <div class="rule-note">
+      <div class="rn-l">
+        <p>规则外置成 JSON，改口径不用改代码。</p>
+        <p class="sub">改一条规则要动三个字段：<br>检查项写在哪、判据是什么、<br>命中后归哪个模块</p>
+      </div>
+      <code>{"module":"A","check":"数字有出处","basis":"无出处即报"}</code>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 第三屏 ================= -->
+<section class="case">
+  <div class="wrap">
+    <p class="eyebrow">一次真实跑通</p>
+    <p class="case-lead">用 41 条公开渠道的真实玩家反馈跑了一遍，从贴原始反馈到出自检通过的日报。</p>
+
+    <div class="case-grid">
+      <div class="case-txt">
+        <div class="case-item">
+          <span class="k">01</span>
+          <h4>41 条反馈逐条标渠道与日期</h4>
+          <p>繁体保原文不转写，来源写清是官方公告、TapTap 还是 PTT。</p>
+          <p class="note">渠道、日期、原文三样都留在表里，不合并成一句总结。</p>
+        </div>
+        <div class="case-item">
+          <span class="k">02</span>
+          <h4>合并去重成 7 条</h4>
+          <p>按功能故障、体验问题、玩法建议、数值平衡、内容合规五类分开统计。</p>
+          <p class="note">边界条目记主类，另记备选归属。</p>
+        </div>
+        <div class="case-item">
+          <span class="k">03</span>
+          <h4>出四节日报，跑交付前自检</h4>
+          <p>自检按 A 到 F 六模块逐项判定，缺栏单独列出。</p>
+          <p class="note">自检第一次报 3 项缺栏，补完后第二次 0 项。</p>
+        </div>
+      </div>
+
+      <figure class="shot">
+        <img src="./screenshots/03-自检结果.png" alt="工具里的交付前自检界面：A 到 F 六个模块逐项显示未发现问题">
+        <figcaption>第三步 · 交付前自检：A 至 F 六模块逐项判定，栏内写明检查范围</figcaption>
       </figure>
     </div>
-  </main>
 
-  <footer>
+    <div class="stats">
+      <div class="stat"><div class="v">39/39</div><div class="l">规则检出</div></div>
+      <div class="stat"><div class="v">0</div><div class="l">误报</div></div>
+      <div class="stat"><div class="v">4/4</div><div class="l">跨引擎一致</div></div>
+      <div class="stat"><div class="v">8/8</div><div class="l">负向测试拦住</div></div>
+      <div class="stat"><div class="v">91.7%</div><div class="l">人工一致率</div></div>
+    </div>
+  </div>
+
+  <footer class="wrap">
     <span>代码 Apache-2.0</span>
-    <span aria-hidden="true">·</span>
+    <span class="sep" aria-hidden="true">·</span>
     <span>文档 CC BY-NC-SA 4.0</span>
-    <span aria-hidden="true">·</span>
+    <span class="sep" aria-hidden="true">·</span>
+    <span>引用请注明来源</span>
+    <span class="sep" aria-hidden="true">·</span>
     <a href="https://github.com/Ahah-Bit/ops-task-flow/blob/master/LICENSE">许可</a>
   </footer>
-</div>
+</section>
 
 </body>
 </html>
