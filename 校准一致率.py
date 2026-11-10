@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """借鉴 2 的计算入口：填完人工判定与 AI 审读结果后，一条命令算一致率。
 
-现在两栏都是空的，脚本会如实打印「还有多少条待填」并退出，不会拿空值凑一个数，
-也不会替人判定。填法：把 评测层-人工校准集.json 里每条的 ai 与 human
-填成 ACCEPTABLE 或 REJECTED，再跑本脚本。
+ai 栏填 AI 审读的判定，human 栏必须由真人填。两栏没齐时，脚本会如实打印「还差几条」
+并退出，不会拿空值凑一个数，也不会替人判定。填法：把 评测层-人工校准集.json
+里每条的 ai 与 human 填成 ACCEPTABLE 或 REJECTED，再跑本脚本。
 
 出处：mrjunos/llm-eval-harness 的 data/judge_calibration.yaml，用 judge 与 human
 的一致率当信任指标，并区分不对称失败。仓库地址
@@ -29,8 +29,8 @@ def main():
     if missing_ai or missing_human:
         print("本轮不计算一致率：AI 审读待填 %d 条，人工判定待填 %d 条，共 %d 题。"
               % (len(missing_ai), len(missing_human), len(cases)))
-        print("原因：两栏都要由真人按判据填，替人填数就等于编数据。")
-        print("下一步：跑页面审读填 ai，由李霖峰填 human，再跑本脚本。")
+        print("原因：human 栏必须由真人填；ai 栏是 AI 审读判定，不是替人填的数。")
+        print("下一步：由李霖峰按 评测层-判定核对表.md 逐条填 human，再跑本脚本。")
         return 0
 
     agree = [c for c in cases if c["ai"] == c["human"]]

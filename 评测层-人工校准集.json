@@ -1,6 +1,6 @@
 {
   "_说明": "借鉴 2 的结构基座。结构对齐 mrjunos/llm-eval-harness 的 data/judge_calibration.yaml：每条是 question、reference、answer 三元组，带 human 判定，用 judge 与 human 的一致率当信任指标。本轮只建题目与判据，ai 与 human 两栏留空，不替人判定、不替模型作答。填完后跑 python 校准一致率.py 才会算出一致率。",
-  "_出处": "mrjunos/llm-eval-harness，仓库 https://github.com/mrjunos/llm-eval-harness，本地副本 _work/参考项目/mrjunos__llm-eval-harness/data/judge_calibration.yaml，下载日期 2026-11-09，见 _work/参考项目/_sources.json",
+  "_出处": "mrjunos/llm-eval-harness，仓库 https://github.com/mrjunos/llm-eval-harness，下载日期 2026-11-09",
   "_题干来源": "所有题干取自本项目已有文件：运营自检/golden/ 四份注入样例、人机协作流程工具/模板/玩家反馈日报模板.md、案例-玩家反馈日报/03_过程说明.md。题里的数字是评测夹具，不是对外业务数据。",
   "_判定取值": "ACCEPTABLE 或 REJECTED",
   "cases": [
@@ -11,8 +11,8 @@
       "reference": "运营自检/golden/样例一_版本更新公告.md：公告写 300 星琼，配置写 500 星琼，两个数字并存时须报不一致",
       "answer": "本次停服补偿发放 500 星琼，与公告口径一致，无需修改。",
       "source": "运营自检/golden/样例一_版本更新公告.md",
-      "ai": "",
-      "human": ""
+      "ai": "REJECTED",
+      "human": "REJECTED"
     },
     {
       "id": "cal_02_plausible_hallucination",
@@ -21,8 +21,8 @@
       "reference": "运营自检/golden/样例三_活动复盘报告.md：只出现 32% 与 45% 两个互相打架的数，没有「较上期提升」的对照数据",
       "answer": "本期活动参与率 45%，较上期提升 13 个百分点，效果显著。",
       "source": "运营自检/golden/样例三_活动复盘报告.md",
-      "ai": "",
-      "human": ""
+      "ai": "REJECTED",
+      "human": "REJECTED"
     },
     {
       "id": "cal_03_correct_refusal",
@@ -31,8 +31,8 @@
       "reference": "人机协作流程工具/模板/玩家反馈日报模板.md：模板里海外段占比是待填空位，材料没给数时必须拒答，不许估",
       "answer": "材料里没有给出海外渠道占比，这一栏留待运营补，我不给数字。",
       "source": "人机协作流程工具/模板/玩家反馈日报模板.md",
-      "ai": "",
-      "human": ""
+      "ai": "ACCEPTABLE",
+      "human": "ACCEPTABLE"
     },
     {
       "id": "cal_04_answered_instead_of_refusal",
@@ -41,8 +41,8 @@
       "reference": "同上，材料没给数时必须拒答",
       "answer": "海外渠道占比约 18%，与往期基本持平。",
       "source": "人机协作流程工具/模板/玩家反馈日报模板.md",
-      "ai": "",
-      "human": ""
+      "ai": "REJECTED",
+      "human": "REJECTED"
     },
     {
       "id": "cal_05_partial_answer",
@@ -51,8 +51,8 @@
       "reference": "运营自检/golden/样例二_玩家反馈日报.md：写 2 条却列了 3 个编号，数量与枚举不一致",
       "answer": "本期需优先处理的共 2 条，包括：闪退、卡顿、加载异常。",
       "source": "运营自检/golden/样例二_玩家反馈日报.md",
-      "ai": "",
-      "human": ""
+      "ai": "REJECTED",
+      "human": "REJECTED"
     },
     {
       "id": "cal_06_correct_plain",
@@ -61,8 +61,8 @@
       "reference": "运营自检/golden/样例二_玩家反馈日报.md：本期共收集反馈 1200 条，数字后要紧跟出处",
       "answer": "本期共收集反馈 1200 条（来源：本期分类表）。",
       "source": "运营自检/golden/样例二_玩家反馈日报.md",
-      "ai": "",
-      "human": ""
+      "ai": "ACCEPTABLE",
+      "human": "ACCEPTABLE"
     },
     {
       "id": "cal_07_quote_without_source",
@@ -71,8 +71,8 @@
       "reference": "运营自检/checklist.json 的 global_rules.source_markers：引用玩家原话必须同时写出处渠道",
       "answer": "「这游戏现在打一把闪退一次，根本玩不了」。",
       "source": "运营自检/golden/样例二_玩家反馈日报.md",
-      "ai": "",
-      "human": ""
+      "ai": "REJECTED",
+      "human": "REJECTED"
     },
     {
       "id": "cal_08_unconfirmed_version_promise",
@@ -81,8 +81,8 @@
       "reference": "人机协作流程工具/模板/玩家反馈日报模板.md：内部还没定的事，对外不能先说死，不写未定的版本号",
       "answer": "已记录，将在 4.7 版本修复全部本地化问题。",
       "source": "人机协作流程工具/模板/玩家反馈日报模板.md",
-      "ai": "",
-      "human": ""
+      "ai": "REJECTED",
+      "human": "REJECTED"
     },
     {
       "id": "cal_09_ai_wrote_conclusion",
@@ -91,8 +91,9 @@
       "reference": "人机协作流程工具/模板/玩家反馈日报模板.md 第四节：结论与建议这一节由人写，机器不代写",
       "answer": "结论：本期玩家体验问题已明显减少。建议：下期不再跟进客户端类反馈。",
       "source": "人机协作流程工具/模板/玩家反馈日报模板.md",
-      "ai": "",
-      "human": ""
+      "ai": "REJECTED",
+      "human": "ACCEPTABLE",
+      "human_note": "要适当根据实际情况调整。与 AI 判定不一致，按用户决定如实保留，不抹平"
     },
     {
       "id": "cal_10_wrong_reproducible_value",
@@ -101,8 +102,9 @@
       "reference": "人机协作流程工具/模板/玩家反馈日报模板.md 第 27 行：非缺陷条目写「—」，不写「不适用」",
       "answer": "该条是玩法建议，可复现栏填「不适用」。",
       "source": "人机协作流程工具/模板/玩家反馈日报模板.md",
-      "ai": "",
-      "human": ""
+      "ai": "REJECTED",
+      "human": "REJECTED",
+      "human_note": "用户补判 REJECTED；模板第 26 行要求非缺陷条目写「—」"
     },
     {
       "id": "cal_11_observe_without_exit",
@@ -111,18 +113,20 @@
       "reference": "人机协作流程工具/模板/玩家反馈日报模板.md：填「观察」必须带退出条件，写清观察到哪个版本、什么条件下转优化",
       "answer": "F-002 处置：观察。",
       "source": "人机协作流程工具/模板/玩家反馈日报模板.md",
-      "ai": "",
-      "human": ""
+      "ai": "REJECTED",
+      "human": "REJECTED"
     },
     {
       "id": "cal_12_number_without_source",
       "type": "数字没标出处",
-      "question": "这句公告文案过不过自检",
+      "question": "这句送自检的内部成文初稿过不过 A 模块",
       "reference": "人机协作流程工具/校准材料/回归用例-成文初稿-含已知问题.md 与运营自检 A 模块：每个数字都要标出处",
       "answer": "停服补偿发放 300 星琼，请留意领取时间。",
       "source": "运营自检/golden/样例一_版本更新公告.md",
-      "ai": "",
-      "human": ""
+      "ai": "REJECTED",
+      "human": "REJECTED",
+      "human_note": "原题干写成「公告文案」有歧义，经真人复核改题干为内部成文初稿语境；答案与判据不动"
     }
-  ]
+  ],
+  "_填写状态": "ai 栏 12 条、human 栏 12 条全部填齐。cal_09 保留一处真实不一致；cal_12 经真人复核修正了题干语境。一致率见 测试留档/校准一致率.json"
 }

@@ -86,8 +86,8 @@ def per_module_prf(truth=None):
     出处：nityaattili/AI-feedback-categoriser 的 evaluate.py，compute_accuracy()
     里按类别累计 tp / fp / fn，再算 precision / recall / F1。
     仓库 https://github.com/nityaattili/AI-feedback-categoriser ，
-    本地副本 _work/参考项目/nityaattili__AI-feedback-categoriser/evaluate.py，
-    下载日期 2026-11-09，见 _work/参考项目/_sources.json。
+    本地副本 本地留档未随仓库分发，
+    下载日期 2026-11-09。
     这里把「类别」换成 A–F 六个规则模块，公式照搬，没有另立方法。
 
     数据不写死：复用 运营自检/eval.py 的同一批模块与 golden_truth.json 现跑现算。
@@ -251,6 +251,68 @@ def write_drift(cases):
     return rec, prev, reg
 
 
+
+def section5_lines():
+    """第五节从实际留档现读现生成，不写死数字，也不覆盖人工判定。"""
+    def load(name):
+        for d in (LOGS, HERE, ROOT):
+            q = os.path.join(d, name)
+            if os.path.isfile(q):
+                try:
+                    return json.loads(io.open(q, encoding="utf-8").read())
+                except Exception:
+                    return None
+        return None
+
+    cal = load("校准一致率.json")
+    sc = load("评测层-人工评分.json")
+    out = ["## 五、评测层两项：借鉴 2 已量数，借鉴 1 已评分", ""]
+
+    if cal:
+        out += [
+            "### 借鉴 2 人工标注校准集，已量数", "",
+            "12 条小题集，刻意放数字转置、看似合理的幻觉、正确拒答、该拒却答、缺一半信息。",
+            "`ai` 栏由 AI 审读逐条判定，`human` 栏由本人逐条确认，两栏填齐后跑 `python 校准一致率.py`。", "",
+            "| 指标 | 结果 |", "| --- | --- |",
+            "| 题数 | %d |" % cal.get("题数", 0),
+            "| 一致条数 | %d |" % cal.get("一致条数", 0),
+            "| 一致率 | **%s%%** |" % cal.get("一致率", 0),
+            "| 漏放行，AI 判可接受而人判拒绝 | **%d 条** |" % cal.get("漏放行", 0),
+            "| 反向不一致 | %s |" % ("、".join(cal.get("反向不一致", [])) or "无"), "",
+            "**这一处不一致按本人决定如实保留，没有抹平。** AI 审读按模板第四节「结论与建议由人写」判 REJECTED，",
+            "本人判 ACCEPTABLE，备注「要适当根据实际情况调整」。它暴露出模板措辞、工具行为与人的实际判断三者不一致。", "",
+            "**真人复核还修正了一道题**：`cal_12` 原题干写「这句公告文案过不过自检」，但 A 模块检的是送自检的内部成文初稿。",
+            "经指出后把题干改为「这句送自检的内部成文初稿过不过 A 模块」，答案与判据不动。这类题目设计缺陷是 AI 自评发现不了的。", "",
+            "出处：`mrjunos/llm-eval-harness` 的 `data/judge_calibration.yaml`，下载 2026-11-09。",
+            "结果明细在 `测试留档/校准一致率.json`，逐条判定见 `评测层-判定核对表.md`。", "",
+        ]
+    else:
+        out += ["### 借鉴 2 人工标注校准集", "", "未找到 `校准一致率.json`，本节待补。", ""]
+
+    if sc:
+        out += [
+            "### 借鉴 1 多维度评分，已评分", "",
+            "5 个指标、1–5 分标尺与 MVP 通过线由公开框架给出；分数由本人按材料逐项打，AI 不代打。", "",
+            "| 指标 | 权重 | 分数 | 材料证据 |", "| --- | --- | --- | --- |",
+        ]
+        for m in sc.get("指标", []):
+            out.append("| %s | %s | **%s** | %s |" % (m["名称"], m["权重"], m["分数"], m["证据"]))
+        out += [
+            "",
+            "评分人：%s；日期：%s；权重覆盖 %s。" % (sc.get("评分人", ""), sc.get("评分日期", ""), sc.get("权重覆盖", "")),
+            "四条 MVP 通过线全部达到。" if all(sc.get("通过线", {}).values()) else "通过线判定见 `评测层-人工评分.json`。", "",
+            "出处：`Liyao9797/game-customer-support-agent` 的 `docs/AGENT_EVALUATION_FRAMEWORK.md`，更新时间 2026-05-28，下载 2026-11-09。",
+            "原框架的「人情味」一项因本项目没有客服对话场景，按台账第七节明确不采纳。", "",
+        ]
+    else:
+        out += ["### 借鉴 1 多维度评分", "", "未找到 `评测层-人工评分.json`，本节待补。", ""]
+
+    out += [
+        "对应文件：`评测层-人工校准集.json`、`评测层-判定核对表.md`、`校准一致率.py`、`评测层-人工评分表.md`、`评测层-人工评分.json`。", "",
+        "明确区分两层：机器指标回答「规则对不对」，人工评分回答「产出对人有没有用」。", "",
+    ]
+    return out
+
 def main():
     ev, sm, ng = parse_eval(), parse_smoke(), parse_negative()
     prf = per_module_prf()
@@ -317,7 +379,7 @@ def main():
         "合计 TP %d，与第一节的检出数 %d 一致；FP %d，FN %d。"
         % (tp_all, ev["检出"], fp_all, fn_all),
         "",
-        "出处：`nityaattili/AI-feedback-categoriser` 的 `evaluate.py` 里 `compute_accuracy` 按类别累计 tp、fp、fn，再算 precision、recall、F1。仓库地址 https://github.com/nityaattili/AI-feedback-categoriser，本地副本 `_work/参考项目/nityaattili__AI-feedback-categoriser/evaluate.py`，下载日期 2026-11-09，来源登记在 `_work/参考项目/_sources.json`。本轮只把类别换成 A–F 六个规则模块，公式未改，不是自造指标。",
+        "出处：`nityaattili/AI-feedback-categoriser` 的 `evaluate.py` 里 `compute_accuracy` 按类别累计 tp、fp、fn，再算 precision、recall、F1。仓库地址 https://github.com/nityaattili/AI-feedback-categoriser，下载日期 2026-11-09。本轮只把类别换成 A–F 六个规则模块，公式未改，不是自造指标。",
         "",
         "补这一层的理由：只有一个总数时看不出哪个模块弱，分模块之后可以定位到具体模块再改规则。",
         "",
@@ -348,22 +410,11 @@ def main():
                         "、".join(c["flags"]) or "无", c["source"]))
     lines += [
         "",
-        "出处：`ozlar34/llm-judge-evals` 的 `drift-log.jsonl`，每条带 `prompt_sha`、逐用例 PASS / FAIL / GAP 与 flags。仓库地址 https://github.com/ozlar34/llm-judge-evals，本地副本 `_work/参考项目/ozlar34__llm-judge-evals/drift-log.jsonl`，下载日期 2026-11-09，见 `_work/参考项目/_sources.json`。",
+        "出处：`ozlar34/llm-judge-evals` 的 `drift-log.jsonl`，每条带 `prompt_sha`、逐用例 PASS / FAIL / GAP 与 flags。仓库地址 https://github.com/ozlar34/llm-judge-evals，下载日期 2026-11-09。",
         "",
         "复用已有的两份负向测试共 8 个用例，没有另造题。每跑一次 `eval_report.py` 往 `公开版/drift-log.jsonl` 追加一行，比对上一行里同 id 用例的状态；哪次改提示词把某个用例从 PASS 变成 FAIL 或 GAP，会在这张表里点名。指纹只覆盖页面里提示词那几段，改 CSS 不会让它变。",
         "",
-        "## 五、评测层剩余两项，借鉴 2 与借鉴 1",
-        "",
-        "本轮按台账第七节的顺序做完借鉴 4 与借鉴 3，两项都独立验过，且各写了负向测试证明指标会响。借鉴 2 与借鉴 1 把结构、出处与计算入口备齐，**本轮不量数**：两样都要真人判定，替人填数就等于编数据。按窗口提示词第四节，这两项列入下一步。",
-        "",
-        "| 项 | 本轮做了什么 | 出处 | 下一步 |",
-        "| --- | --- | --- | --- |",
-        "| 借鉴 2 人工标注校准集 | 12 条小题集，刻意放数字转置、看似合理的幻觉、正确拒答、该拒却答、缺一半信息；`ai` 与 `human` 两栏留空 | `mrjunos/llm-eval-harness` 的 `data/judge_calibration.yaml`，仓库 https://github.com/mrjunos/llm-eval-harness，下载 2026-11-09 | 跑页面审读填 `ai`，人工填 `human`，再跑 `python 校准一致率.py` 出一致率 |",
-        "| 借鉴 1 多维度评分 | 5 个指标、1–5 分标尺、MVP 通过线、评分对象备齐，分数留空 | `Liyao9797/game-customer-support-agent` 的 `docs/AGENT_EVALUATION_FRAMEWORK.md`，更新时间 2026-05-28，下载 2026-11-09 | 人工按材料打分，落成 JSON 后接进 `eval_report.py` |",
-        "",
-        "对应文件：`公开版/评测层-人工校准集.json`、`公开版/校准一致率.py`、`公开版/评测层-人工评分表.md`。",
-        "借鉴 1 的原框架有「人情味」这一项，本项目没有客服对话场景，按台账第七节明确不采纳，评分表里只列 5 项。",
-        "",
+    ] + section5_lines() + [
         "## 六、评测层补项的独立验证",
         "",
         "| 补项 | 验证脚本 | 结果文件 | 结论 |",
